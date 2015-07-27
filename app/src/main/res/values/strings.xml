@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">MockGpsPath</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="txt_json_url">http://192.168.1.149:8080/gpslocations/locations.json</string>
+    <string name="buttons_fetch_json">获取locations</string>
+    <string name="txt_default">      </string>
+    <string name="buttons_1_toggle">Toggle</string>
+
+
+</resources>
