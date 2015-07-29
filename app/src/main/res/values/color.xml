@@ -1,0 +1,92 @@
+<resources>
+
+    <color name="grey_1">#ff3b3b3b</color>
+    <color name="activity_bg">#fff0f0f0</color>
+    <color name="plank_beans">#ffb503</color>
+    <color name="white_transparent">#f2ffffff</color>
+    <color name="white">#ffffffff</color>
+    <color name="clear">#00000000</color>
+    <color name="orange">#ffDD7a58</color>
+    <color name="grey_transparent">#FFE0E0E0</color>
+    <color name="grep_ripple">#50f1f1f1</color>
+    <color name="orange_share">#ffff7e00</color>
+    <color name="middle_grey">#ff808080</color>
+    <color name="shallow_grep">#ffd4d4d4</color>
+    <color name="text_grey">#50ffffff</color>
+    <color name="trans_white_50">#80ffffff</color>
+    <color name="secondary_text">#ff999999</color>
+    <color name="dark">#ff000000</color>
+    <color name="dark_cover">#40000000</color>
+    <color name="blue">#ff009aff</color>
+    <color name="post_orange">#f1f1f1</color>
+    <color name="progress_green">#B3FD5A</color>
+    <!-- 群组 -->
+    <color name="green_tie_account">#5cb52b</color>
+    <color name="orange_group_name">#ffff7e00</color>
+    <color name="orange_text_down">#80ff7e00</color>
+    <color name="grey_group">#ffb0b0b0</color>
+    <color name="light_grey_group">#ffe2e2e2</color>
+    <color name="white_group_rank_btn">#ccffffff</color>
+    <color name="dark_grey_group">#ff777777</color>
+    <color name="groupmanagement_grey_left">#ffe2e2e2</color>
+    <color name="groupmanagement_grey_left_null">#fff3f3f3</color>
+    <color name="groupmanagement_grey_line">#ffb9b9b9</color>
+    <color name="dark_grey_button">#ff9e9e9e</color>
+    <color name="light_orange_button">#ffff7e00</color>
+    <color name="dark_orange_button">#ffe76b00</color>
+    <color name="transparent_orange_bar">#66ffbe00</color>
+    <color name="transparent_blue_bar">#667ae3ff</color>
+    <color name="bottom_line_green">#57ccaf</color>
+    <color name="bottom_line_orange">#ff7e00</color>
+    <color name="bottom_line_blue">#56c6f1</color>
+
+    <!-- 企业圈子 -->
+    <color name="department1">#00a0e9</color>
+    <color name="department2">#ffcc00</color>
+    <color name="department3">#69ced3</color>
+    <color name="department4">#ee7aca</color>
+    <color name="department5">#5cb52b</color>
+    <color name="department6">#e040fb</color>
+    <color name="department7">#ff6e40</color>
+    <color name="department8">#64ffda</color>
+    <color name="department9">#b388ff</color>
+    <color name="department10">#b2ff59</color>
+    <color name="department11">#ffff00</color>
+    <color name="department12">#00e5ff</color>
+    <color name="department13">#fb8c00</color>
+    <color name="department14">#673ab7</color>
+    <color name="department15">#ff80ab</color>
+    <color name="department16">#2962ff</color>
+    <color name="department17">#00796b</color>
+    <color name="department18">#e65100</color>
+    <color name="department19">#b2ebf2</color>
+    <color name="department20">#fff59d</color>
+    <color name="department21">#009688</color>
+    <color name="department22">#76ff03</color>
+    <color name="department23">#ab47bc</color>
+    <color name="department24">#c62828</color>
+    <color name="department25">#448aff</color>
+    <color name="department26">#4caf50</color>
+    <color name="department27">#90caf9</color>
+    <color name="department28">#ffab91</color>
+    <color name="department29">#a7ffeb</color>
+    <color name="department30">#4353f1</color>
+
+    <color name="black60">#99000000</color>
+
+    <color name="light_grey">#ffbfbfbf</color>
+    <color name="dark_grey">#ff4d4d4d</color>
+    <color name="test_c">#FFEA00</color>
+    <color name="test_b">#FFAB44</color>
+    <color name="test_a">#FF6D80</color>
+
+    <color name="black">#000000</color>
+    <color name="detail_bg_color">#32363A</color>
+    <color name="white50">#7fffffff</color>
+
+    <color name="dialog_divider">#ffb9b9b9</color>
+    <color name="light_blue">#ff44d2fd</color>
+    <color name="light_red">#fffd4444</color>
+    <color name="black70">#B3000000</color>
+    <color name="runner_share_logo_bg">#E61A1A1A</color>
+</resources>
