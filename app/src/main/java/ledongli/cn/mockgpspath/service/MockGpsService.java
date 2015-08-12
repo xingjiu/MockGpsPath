@@ -142,15 +142,20 @@ public class MockGpsService extends Service {
             locationManager.setTestProviderEnabled("gps", true);
 
             long timeInterval = 0;
-            for (int i=0; i<mLocationList.size() && !stoped; i++) {
+            for (int i=0;!stoped; i++) {
+
+                i = i%mLocationList.size();
+
                 LDLLocation lc = mLocationList.get(i);
 
                 LogUtils.i(TAG, "mock gps : " + lc.getLon() + "," + lc.getLat());
 
+                double random = Math.random() * 0.00001;
+
                 Location loc = new Location("gps");
                 loc.setTime(System.currentTimeMillis());
-                loc.setLatitude(lc.getLat());
-                loc.setLongitude(lc.getLon());
+                loc.setLatitude(loc.getLatitude() + random);
+                loc.setLongitude(loc.getLongitude() + random);
                 loc.setBearing((float) lc.getCourse());
                 loc.setSpeed((float) lc.getSpeed());
                 loc.setAccuracy((float) lc.getAccuracy());
@@ -164,9 +169,9 @@ public class MockGpsService extends Service {
 
                 if (i < mLocationList.size() - 1) {
                     LDLLocation next = mLocationList.get(i + 1);
-                    timeInterval = (long) ((next.getTimeInterval() - lc.getTimeInterval()) * 1000);
+                    timeInterval = (next.getTimeInterval() - lc.getTimeInterval());
                 } else {
-                    timeInterval = 1000;
+                    timeInterval = 2000;
                 }
 
                 try {
@@ -174,6 +179,8 @@ public class MockGpsService extends Service {
                 } catch (Exception e) {
                 }
             }
+
+            updateNotification(0, lastTimeStamp);
 
             locationManager.setTestProviderEnabled("gps", false);
             locationManager.removeTestProvider("gps");

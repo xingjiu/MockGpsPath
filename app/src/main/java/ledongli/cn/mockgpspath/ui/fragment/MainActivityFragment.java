@@ -2,6 +2,8 @@ package ledongli.cn.mockgpspath.ui.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +35,19 @@ public class MainActivityFragment extends BaseFragment implements View.OnClickLi
     @InjectView(R.id.button_toggle)
     ToggleButton mBtnToggle;
 
+    Handler checkHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (MockGpsService.instance != null && MockGpsService.instance.isMocking()) {
+                mBtnToggle.setChecked(true);
+            } else {
+                mBtnToggle.setChecked(false);
+            }
+
+            checkHandler.sendEmptyMessageDelayed(0, 1000);
+        }
+    };
+
     public MainActivityFragment() {
     }
 
@@ -46,6 +61,8 @@ public class MainActivityFragment extends BaseFragment implements View.OnClickLi
 
         mBtnRequestLocations.setOnClickListener(this);
         mBtnToggle.setOnClickListener(this);
+
+        checkHandler.sendEmptyMessageDelayed(0, 1000);
     }
 
     @Override
@@ -66,7 +83,6 @@ public class MainActivityFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
-        LogUtils.d(TAG, "viewid="+view.getId());
         switch (view.getId()) {
             case R.id.button_request:
                 loadLocations();

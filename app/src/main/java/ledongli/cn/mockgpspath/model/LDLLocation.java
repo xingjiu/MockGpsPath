@@ -14,7 +14,7 @@ public class LDLLocation  implements Serializable {
     double lat;
     double lon;
     double speed;
-    double timeInterval;
+    long timeInterval;
 
     public double getAccuracy() {
         return accuracy;
@@ -56,11 +56,11 @@ public class LDLLocation  implements Serializable {
         this.speed = speed;
     }
 
-    public double getTimeInterval() {
+    public long getTimeInterval() {
         return timeInterval;
     }
 
-    public void setTimeInterval(double timeInterval) {
+    public void setTimeInterval(long timeInterval) {
         this.timeInterval = timeInterval;
     }
 }
