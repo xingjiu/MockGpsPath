@@ -34,6 +34,10 @@ public class MainActivityFragment extends BaseFragment implements View.OnClickLi
     TextView mTxtViewResult;
     @InjectView(R.id.button_toggle)
     ToggleButton mBtnToggle;
+    @InjectView(R.id.editText_speed)
+    EditText mSpeedSetView;
+    @InjectView(R.id.button_setspeed)
+    Button mBtnSetSpeed;
 
     Handler checkHandler = new Handler() {
         @Override
@@ -61,6 +65,7 @@ public class MainActivityFragment extends BaseFragment implements View.OnClickLi
 
         mBtnRequestLocations.setOnClickListener(this);
         mBtnToggle.setOnClickListener(this);
+        mBtnSetSpeed.setOnClickListener(this);
 
         checkHandler.sendEmptyMessageDelayed(0, 1000);
     }
@@ -95,6 +100,14 @@ public class MainActivityFragment extends BaseFragment implements View.OnClickLi
                     stopService();
                 }
                 break;
+            case R.id.button_setspeed:
+                String speed = mSpeedSetView.getText().toString();
+                try {
+                    setSpeed(Double.parseDouble(speed));
+                } catch (Exception e) {
+
+                }
+
             default:
                 break;
         }
@@ -106,6 +119,12 @@ public class MainActivityFragment extends BaseFragment implements View.OnClickLi
             return;
         }
         LocationsProvider.getInstance().getLocationFromUrl(url);
+    }
+
+    private void setSpeed(double speed) {
+        if (MockGpsService.instance != null && MockGpsService.instance.isMocking()) {
+            MockGpsService.instance.setSpeed(speed);
+        }
     }
 
     private void startService() {

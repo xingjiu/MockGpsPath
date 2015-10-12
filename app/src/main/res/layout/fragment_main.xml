@@ -42,6 +42,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editText_speed"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:text="3"/>
+
+            <!-- Small buttons -->
+            <Button android:id="@+id/button_setspeed"
+                style="?android:attr/buttonStyleSmall"
+                android:text="@string/buttons_set_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </RelativeLayout>

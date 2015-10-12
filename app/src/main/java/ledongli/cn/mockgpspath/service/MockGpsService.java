@@ -11,8 +11,8 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.widget.RemoteViews;
 import android.support.v4.app.NotificationCompat;
+import android.widget.RemoteViews;
 
 import java.util.List;
 
@@ -20,6 +20,7 @@ import ledongli.cn.mockgpspath.R;
 import ledongli.cn.mockgpspath.controller.LocationsProvider;
 import ledongli.cn.mockgpspath.model.LDLLocation;
 import ledongli.cn.mockgpspath.ui.activity.MainActivity;
+import ledongli.cn.mockgpspath.util.ListUtil;
 import ledongli.cn.mockgpspath.util.LogUtils;
 
 public class MockGpsService extends Service {
@@ -34,7 +35,6 @@ public class MockGpsService extends Service {
     private NotificationManager mNotificationManager;
     private NotificationCompat.Builder mBuilder;
     private static final int MOCKGPS_NOTI_ID = 1001;
-    private long lastTimeStamp = 0;
 
     UpdateGPSThread mockThread = null;
 
@@ -79,6 +79,12 @@ public class MockGpsService extends Service {
         return mockThread!=null && mockThread.isAlive();
     }
 
+    public void setSpeed(double speed) {
+        if (mockThread != null && mockThread.isAlive()) {
+            mockThread.setSpeed(speed);
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -118,8 +124,17 @@ public class MockGpsService extends Service {
     private void updateNotification(float speed, long timestamp) {
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.mock_notification_layout);
         remoteViews.setTextViewText(R.id.tv_noti_speed, speed + "");
-        remoteViews.setTextViewText(R.id.tv_noti_timeinterval, (timestamp - lastTimeStamp) / 1000 + "s");
-        lastTimeStamp = timestamp;
+        remoteViews.setTextViewText(R.id.tv_noti_timeinterval, timestamp + "s");
+        if (mBuilder != null) {
+            mBuilder.setContent(remoteViews);
+            mNotificationManager.notify(MOCKGPS_NOTI_ID, mBuilder.build());
+        }
+    }
+
+    private void updateNotification(String left, String right) {
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.mock_notification_layout);
+        remoteViews.setTextViewText(R.id.tv_noti_speed, left);
+        remoteViews.setTextViewText(R.id.tv_noti_timeinterval, right);
         if (mBuilder != null) {
             mBuilder.setContent(remoteViews);
             mNotificationManager.notify(MOCKGPS_NOTI_ID, mBuilder.build());
@@ -127,16 +142,39 @@ public class MockGpsService extends Service {
     }
 
     class UpdateGPSThread extends Thread {
-        List<LDLLocation> mLocationList = null;
+        List<Location> mLocationList = null;
+        List<LDLLocation> mLDLocationList = null;
 
-        boolean stoped = false;
+        boolean stoped  = false;
+        double speed    = 3.0;     // m/s
 
         public UpdateGPSThread(List<LDLLocation> locationList) {
-            this.mLocationList = locationList;
+            this.mLDLocationList = locationList;
+        }
+
+        Location currentLocation = null;
+
+        public void setSpeed(double speed) {
+            this.speed = speed;
         }
 
         @Override
         public void run() {
+
+            this.mLocationList = ListUtil.trasList(mLDLocationList, new ListUtil.Transferable<Location, LDLLocation>() {
+                @Override
+                public Location transfer(LDLLocation location) {
+                    Location loc = new Location("gps");
+                    loc.setTime(location.getTimeInterval());
+                    loc.setLatitude(location.getLat());
+                    loc.setLongitude(location.getLon());
+                    loc.setBearing((float) location.getCourse());
+                    loc.setSpeed((float) location.getSpeed());
+                    loc.setAccuracy((float) location.getAccuracy());
+                    return loc;
+                }
+            });
+
             LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             locationManager.addTestProvider("gps", false, false, false, false, false, true, true, 1, 1);
             locationManager.setTestProviderEnabled("gps", true);
@@ -146,33 +184,29 @@ public class MockGpsService extends Service {
 
                 i = i%mLocationList.size();
 
-                LDLLocation lc = mLocationList.get(i);
+                double random = Math.random() * 0.00002;
 
-                LogUtils.i(TAG, "mock gps : " + lc.getLon() + "," + lc.getLat());
+                currentLocation = copyLocation(mLocationList.get(i));
+                currentLocation.setLongitude(currentLocation.getLongitude() + random);
+                currentLocation.setLatitude(currentLocation.getLatitude() + random);
+                currentLocation.setTime(System.currentTimeMillis());
 
-                double random = Math.random() * 0.00001;
-
-                Location loc = new Location("gps");
-                loc.setTime(System.currentTimeMillis());
-                loc.setLatitude(loc.getLatitude() + random);
-                loc.setLongitude(loc.getLongitude() + random);
-                loc.setBearing((float) lc.getCourse());
-                loc.setSpeed((float) lc.getSpeed());
-                loc.setAccuracy((float) lc.getAccuracy());
                 if(Build.VERSION.SDK_INT > 16){
-                    loc.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+                    currentLocation.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
                 }
 
-                locationManager.setTestProviderLocation("gps", loc);
+                locationManager.setTestProviderLocation("gps", currentLocation);
 
-                updateNotification(loc.getSpeed(), loc.getTime());
+                Location next = mLocationList.get((i + 1) % mLocationList.size());
 
-                if (i < mLocationList.size() - 1) {
-                    LDLLocation next = mLocationList.get(i + 1);
-                    timeInterval = (next.getTimeInterval() - lc.getTimeInterval());
-                } else {
-                    timeInterval = 2000;
-                }
+                float distance = currentLocation.distanceTo(next);
+
+//                timeInterval = Math.abs(mLocationList.get(i).getTime() - next.getTime());  //(long)(distance*1000/speed);
+//                timeInterval = Math.min(timeInterval, 20000);
+
+                timeInterval = (int)(distance * 1000 / speed);
+
+                updateNotification(distance*1000/timeInterval + "m/s", i+"");
 
                 try {
                     Thread.sleep(timeInterval);
@@ -180,7 +214,102 @@ public class MockGpsService extends Service {
                 }
             }
 
-            updateNotification(0, lastTimeStamp);
+            updateNotification("0.0m/s", "stoped");
+
+            locationManager.setTestProviderEnabled("gps", false);
+            locationManager.removeTestProvider("gps");
+        }
+
+        private Location copyLocation(Location location) {
+            Location loc = new Location("gps");
+            loc.setTime(System.currentTimeMillis());
+            loc.setLatitude(location.getLatitude());
+            loc.setLongitude(location.getLongitude());
+            loc.setBearing(location.getBearing());
+            loc.setSpeed(location.getSpeed());
+            loc.setAccuracy(location.getAccuracy());
+
+            return loc;
+        }
+
+        private List<Location> genLocations(List<Location> locationLis) {
+
+
+            return null;
+        }
+    }
+
+    class UpdateGPSThread1 extends Thread {
+        List<LDLLocation> mLocationList = null;
+
+        boolean stoped = false;
+        double speed = 10;
+
+        public UpdateGPSThread1(List<LDLLocation> locationList) {
+            this.mLocationList = locationList;
+        }
+
+        public void setSpeed(double speed) {
+            this.speed = speed;
+        }
+
+        @Override
+        public void run() {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            locationManager.addTestProvider("gps", false, false, false, false, false, true, true, 1, 1);
+            locationManager.setTestProviderEnabled("gps", true);
+
+            long timeInterval = 500;
+
+            double lat10meter = -0.00009;
+
+            double initLon = 116.337618;
+            double initLat = 39.992888;
+            double incrLon = 0.0;
+            double incrLat = -0.00009;
+
+            Location preLoc = null;
+            Location currentLoc = null;
+
+            while (!stoped) {
+
+                incrLat = lat10meter*speed/20;
+
+                initLon+=incrLon;
+                initLat+=incrLat;
+
+                Location loc = new Location("gps");
+                loc.setTime(System.currentTimeMillis());
+                loc.setLatitude(initLat);
+                loc.setLongitude(initLon);
+                loc.setBearing((float) 270.0);
+                loc.setSpeed(1.0f);
+                loc.setAccuracy(10.0f);
+                if(Build.VERSION.SDK_INT > 16){
+                    loc.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+                }
+
+                if (preLoc == null) {
+                    preLoc = loc;
+                }
+
+                currentLoc = loc;
+
+                float distance = preLoc.distanceTo(currentLoc);
+
+                locationManager.setTestProviderLocation("gps", loc);
+
+                updateNotification((distance*1000/timeInterval) + "", initLat + "");
+
+                try {
+                    Thread.sleep(timeInterval);
+                } catch (Exception e) {
+                }
+
+                preLoc = loc;
+            }
+
+            updateNotification("0", "0");
 
             locationManager.setTestProviderEnabled("gps", false);
             locationManager.removeTestProvider("gps");
