@@ -14,6 +14,7 @@ import android.widget.ToggleButton;
 import butterknife.InjectView;
 import ledongli.cn.mockgpspath.R;
 import ledongli.cn.mockgpspath.common.GlobalConfig;
+import ledongli.cn.mockgpspath.common.preference.PreferenceUtils;
 import ledongli.cn.mockgpspath.controller.LocationsProvider;
 import ledongli.cn.mockgpspath.event.LocationFetchEvent;
 import ledongli.cn.mockgpspath.service.MockGpsService;
@@ -38,6 +39,8 @@ public class MainActivityFragment extends BaseFragment implements View.OnClickLi
     EditText mSpeedSetView;
     @InjectView(R.id.button_setspeed)
     Button mBtnSetSpeed;
+
+    private static final String PREF_DRAFT = "pref_draft";
 
     Handler checkHandler = new Handler() {
         @Override
@@ -66,6 +69,8 @@ public class MainActivityFragment extends BaseFragment implements View.OnClickLi
         mBtnRequestLocations.setOnClickListener(this);
         mBtnToggle.setOnClickListener(this);
         mBtnSetSpeed.setOnClickListener(this);
+
+        mUrl1View.setText(PreferenceUtils.getPrefString(PREF_DRAFT, "http://enterprise.ledongli.cn/imgs/locations.json"));
 
         checkHandler.sendEmptyMessageDelayed(0, 1000);
     }
@@ -118,6 +123,7 @@ public class MainActivityFragment extends BaseFragment implements View.OnClickLi
         if (null == url || url.equals("")) {
             return;
         }
+        PreferenceUtils.setPrefString(PREF_DRAFT, url);
         LocationsProvider.getInstance().getLocationFromUrl(url);
     }
 
