@@ -205,6 +205,9 @@ public class MockGpsService extends Service {
 //                timeInterval = Math.min(timeInterval, 20000);
 
                 timeInterval = (int)(distance * 1000 / speed);
+                if (timeInterval > 20000) {
+                    timeInterval = 1000;
+                }
 
                 updateNotification(distance*1000/timeInterval + "m/s", i+"");
 
